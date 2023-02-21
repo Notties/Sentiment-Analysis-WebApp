@@ -1,10 +1,9 @@
-import Nav from '../components/Nav'
+const IndexPage = () => {
+  return (
+    <>
+      <p>Index Home</p>
+    </>
+  );
+};
 
-const IndexPage = () => (
-  <>
-    <Nav />
-    <p>index page</p>
-  </>
-)
-
-export default IndexPage
+export default IndexPage;
