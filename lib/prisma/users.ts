@@ -1,5 +1,11 @@
 import prisma from ".";
 
+type userType = {
+    name: string,
+    email: string,
+    imageUrl: string
+}
+
 export async function getUsers() {
   try {
     const users = await prisma.User.findMany();
@@ -9,7 +15,7 @@ export async function getUsers() {
   }
 }
 
-export async function createUser(user: any) {
+export async function createUser(user: userType) {
   try {
     const userFromDB = await prisma.User.create({
       data: user,
@@ -20,7 +26,7 @@ export async function createUser(user: any) {
   }
 }
 
-export async function getUserById(id: any) {
+export async function getUserById(id: number) {
   try {
     const user = await prisma.User.findUnique({
       where: { id },
