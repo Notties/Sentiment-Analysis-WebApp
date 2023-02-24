@@ -2,12 +2,10 @@ import { SessionProvider } from "next-auth/react";
 import Layout from "../components/Layout/layout";
 import "antd/dist/reset.css";
 import type { AppProps } from "next/app";
-import "../styles/globals.css";
-import Head from "next/head";
-
 import { JSX as LocalJSX } from "@ionic/core";
 import { JSX as IoniconsJSX } from "ionicons";
 import { HTMLAttributes, ReactText } from "react";
+import "../styles/globals.css";
 
 type ToReact<T> = {
   [P in keyof T]?: T[P] &
