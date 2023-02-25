@@ -8,7 +8,7 @@ type userType = {
 
 export async function getUsers() {
   try {
-    const users = await prisma.User.findMany();
+    const users = await prisma.user.findMany();
     return { users };
   } catch (error) {
     return { error };
@@ -17,7 +17,7 @@ export async function getUsers() {
 
 export async function createUser(user: userType) {
   try {
-    const userFromDB = await prisma.User.create({
+    const userFromDB = await prisma.user.create({
       data: user,
     });
     return { user: userFromDB };
@@ -26,11 +26,10 @@ export async function createUser(user: userType) {
   }
 }
 
-export async function getUserById(id: number) {
+export async function getUserById(id: string) {
   try {
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
-      include: { tweets: true },
     });
     return { user };
   } catch (error) {
