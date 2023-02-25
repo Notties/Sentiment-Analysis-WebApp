@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Divider, Dropdown, MenuProps, Row, Space } from "antd";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -71,9 +72,11 @@ const Nav = () => {
                       menu={{ items }}
                     >
                       <Row align={"middle"}>
-                        <img
+                        <Image
                           src={`${session.user.image}`}
                           alt=""
+                          width="0"
+                          height="0"
                           className="w-5 h-5 mr-2 ml-0 mt-0 max-[450px]:mr-0 rounded-full"
                         />
                         <div className="max-[450px]:hidden">
@@ -85,9 +88,11 @@ const Nav = () => {
                 ) : (
                   <Button onClick={() => signIn("google")}>
                     <Row align={"middle"}>
-                      <img
+                      <Image
                         src="https://img.icons8.com/fluency/256/google-logo.png"
                         alt="google"
+                        width="0"
+                        height="0"
                         className="w-4 h-4 mr-2 ml-0 mt-0"
                       />
                       Sign in
