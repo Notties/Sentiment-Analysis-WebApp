@@ -1,5 +1,5 @@
 {
-  "name": "sa-app",
+  "name": "sentiment-analysis",
   "version": "0.1.0",
   "private": true,
   "scripts": {
