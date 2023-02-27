@@ -1,24 +1,10 @@
-import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { NextPage } from "next";
+import Home from "../components/Home/home";
 
 const IndexPage: NextPage = () => {
-  const { data: session } = useSession();
-
   return (
     <>
-      <div>
-        {session && session.user ? (
-          <>
-            <p>{session.user.name}</p>
-            <p>{session.user.email}</p>
-            <img src={`${session.user.image}`} alt="" />
-          </>
-        ) : (
-          <>
-            <p>Please Login</p>
-          </>
-        )}
-      </div>
+      <Home />
     </>
   );
 };
