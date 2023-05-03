@@ -51,8 +51,10 @@ const Nav = () => {
               className="h-6 mr-3 sm:h-9"
               alt="Flowbite Logo"
             />
-            <span className="self-center text-sm md:text-lg font-semibold whitespace-nowrap 
-            bg-gradient-to-r from-blue-400 to-pink-400 inline-block text-transparent bg-clip-text">
+            <span
+              className="self-center text-sm md:text-lg font-semibold whitespace-nowrap 
+            bg-gradient-to-r from-blue-400 to-pink-400 inline-block text-transparent bg-clip-text"
+            >
               Sentiment Analysis
             </span>
           </Link>

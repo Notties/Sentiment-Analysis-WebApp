@@ -1,38 +1,21 @@
 import prisma from ".";
 
-type userType = {
-    name: string,
-    email: string,
-    imageUrl: string
+export const getUserByEmail = async (email: any) => {
+  const user = prisma.user.findUnique({
+    where: {
+      email
+    }
+  })
+
+  return user
 }
 
-export async function getUsers() {
-  try {
-    const users = await prisma.user.findMany();
-    return { users };
-  } catch (error) {
-    return { error };
-  }
-}
+export const getUserIdByEmail = async (email: any) => {
+  const userData = await prisma.user.findUnique({
+    where: {
+      email
+    }
+  });
 
-export async function createUser(user: userType) {
-  try {
-    const userFromDB = await prisma.user.create({
-      data: user,
-    });
-    return { user: userFromDB };
-  } catch (error) {
-    return { error };
-  }
-}
-
-export async function getUserById(id: string) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id },
-    });
-    return { user };
-  } catch (error) {
-    return { error };
-  }
+  return userData?.id
 }

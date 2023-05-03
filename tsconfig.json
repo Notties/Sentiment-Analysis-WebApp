@@ -32,6 +32,9 @@
       "@/components/*": [
         "components/*"
       ],
+      "@/module/*": [
+        "module/*"
+      ],
     },
     "plugins": [
       {

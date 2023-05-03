@@ -1,10 +1,10 @@
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import Layout from "../components/Layout/layout";
 import "antd/dist/reset.css";
 import type { AppProps } from "next/app";
 import { JSX as LocalJSX } from "@ionic/core";
 import { JSX as IoniconsJSX } from "ionicons";
-import { HTMLAttributes, ReactText } from "react";
+import { HTMLAttributes, ReactText, Suspense } from "react";
 import "../styles/globals.css";
 
 type ToReact<T> = {
@@ -23,6 +23,7 @@ declare global {
       > {}
   }
 }
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider session={pageProps.session}>
