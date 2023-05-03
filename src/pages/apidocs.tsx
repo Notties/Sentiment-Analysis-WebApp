@@ -5,12 +5,9 @@ import {
   useNotes,
   useDispatchNotes,
 } from "@/module/AppContext";
-import { ChangeEvent, useState } from "react";
-
-const getUserIdByEmail = require("@/lib/prisma/users").getUserIdByEmail;
+import { useState } from "react";
 
 const AboutPage = () => {
-  const { data: session, status } = useSession();
 
   // the current note
   const currentNote = useNote();
@@ -42,7 +39,7 @@ const AboutPage = () => {
       // let id = noteID;
 
       // set userId
-      setUserID(getUserIdByEmail(session?.user?.email));
+      // setUserID();
 
       // the note object
       let note = {
