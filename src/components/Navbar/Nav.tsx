@@ -27,7 +27,7 @@ const Nav = () => {
   const items: MenuProps["items"] = [
     {
       label: (
-        <div onClick={() => signOut()}>
+        <div onClick={async() => await signOut()}>
           <Row align={"middle"} gutter={3}>
             <p className="mr-2">Sign out</p>
             <LogoutOutlined />
@@ -89,7 +89,7 @@ const Nav = () => {
                     </Dropdown.Button>
                   </>
                 ) : (
-                  <Button onClick={() => signIn("google")}>
+                  <Button onClick={async() => await signIn("google")}>
                     <Row align={"middle"}>
                       <Image
                         src="https://img.icons8.com/fluency/256/google-logo.png"
