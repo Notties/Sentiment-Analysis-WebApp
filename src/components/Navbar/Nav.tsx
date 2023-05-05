@@ -152,6 +152,14 @@ const Nav = () => {
                 </li>
                 <li>
                   <Link
+                    href="/analysis"
+                    className="block py-2 pl-3 pr-4 text-gray-400 rounded hover:bg-gray-100 hover:text-gray-500"
+                  >
+                    Analysis
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/apidocs"
                     className="block py-2 pl-3 pr-4 text-gray-400 rounded hover:bg-gray-100 hover:text-gray-500"
                   >
@@ -173,6 +181,17 @@ const Nav = () => {
                   md:p-0 "
                   >
                     Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/analysis"
+                    className="block py-2 pl-3 pr-4 text-gray-500 rounded duration-700
+                  md:hover:bg-transparent 
+                md:hover:text-blue-500 
+                  md:p-0 "
+                  >
+                    Analysis
                   </Link>
                 </li>
                 <li>

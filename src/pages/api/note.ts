@@ -1,5 +1,5 @@
 
-import { createNote, updateNote, deleteNote } from "@/lib/prisma/note";
+import { createNote, updateNote, deleteNote, getAllNotesByUserID } from "@/lib/prisma/note";
 import { getSession } from "next-auth/react";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -7,14 +7,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // Get the current session data with {user, email, id}
   const session = await getSession({ req });
 
+  if (req.method == "GET") {
+    const { userId } = req.body;
+    const note = await getAllNotesByUserID(userId);
+
+    return res.json(note);
+  }
+
   // Run if the request is a POST request
   if (req.method == "POST") {
     // Get note title & body from the request body
-    const { title, body } = req.body;
+    const { title, body, userId } = req.body;
 
     // Create a new note
     // also pass the session which would be use to get the user information
-    const note = await createNote(title, body, session);
+    const note = await createNote(title, body, userId);
 
     // return created note
     return res.json(note);

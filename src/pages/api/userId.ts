@@ -7,8 +7,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method == "POST") {
-    const userId = await getUserIdByEmail(req.body.email.toString());
+    const userId = await getUserIdByEmail(req.body.email);
 
-    return res.status(200).json({ userId});
+    return res.status(200).json({userId});
   }
 }

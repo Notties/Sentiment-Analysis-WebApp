@@ -1,28 +1,34 @@
-import { Button, Card, Col, Divider, Progress, Row, Space, Tag } from "antd";
+import { Card, Col, Divider, Progress, Row, Space, Tag } from "antd";
 import type { NextPage } from "next";
-import { Typography, Input } from "antd";
+import { Input } from "antd";
 import { useEffect, useState } from "react";
-import { Avatar, Skeleton, Switch } from "antd";
-
-const { Meta } = Card;
+import { Skeleton, } from "antd";
+import useStore from "@/src/store/useStore";
+import { useSession } from "next-auth/react";
 
 const Home: NextPage = () => {
-  const { Title } = Typography;
   const { TextArea } = Input;
-
   const [loading, setLoading] = useState(true);
+  const [userId, setuserId] = useState("");
+  const { data: session } = useSession();
 
-  // const onSubmit = () => {
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //   }, 500);
-  // };
   const onSubmit = () => {
     setLoading(false);
     setTimeout(() => {
       setLoading(true);
     }, 2000);
   };
+
+  async function GetUserId() {
+    const res = await fetch("/api/userId", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(session?.user?.email as string),
+    });
+    const userId = await res.json();
+    setuserId(userId.userId)
+    return userId.userId
+  }
 
   return (
     <>
@@ -57,8 +63,7 @@ const Home: NextPage = () => {
             <Card title="Results" bordered={false} className="m-3">
               {!loading ? (
                 <>
-                  <Skeleton loading={!loading} active>
-                  </Skeleton>
+                  <Skeleton loading={!loading} active></Skeleton>
                 </>
               ) : (
                 <>
