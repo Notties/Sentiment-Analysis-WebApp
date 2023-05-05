@@ -22,12 +22,15 @@ const analysis: NextPage = () => {
   return (
     <>
       <Tabs
+        tabBarStyle={{ margin: 0 }}
         items={[
           {
             key: "1",
             label: (
               <div className="px-7">
-                <CloudUploadOutlined style={{ fontSize: 19, verticalAlign: "baseline" }} />
+                <CloudUploadOutlined
+                  style={{ fontSize: 19, verticalAlign: "text-top" }}
+                />
                 Import .CSV
               </div>
             ),
@@ -37,11 +40,13 @@ const analysis: NextPage = () => {
             key: "2",
             label: (
               <div className="px-7">
-                <FacebookOutlined style={{ fontSize: 18, verticalAlign: "baseline" }} />
+                <FacebookOutlined
+                  style={{ fontSize: 18, verticalAlign: "text-top"}}
+                />
                 Face book
               </div>
             ),
-            children: "Content of Tab Pane 2",
+            children: "Face book",
           },
         ]}
       />
