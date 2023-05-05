@@ -1,4 +1,4 @@
-import prisma from ".";
+import prisma from "./prismadb";
 
 // CREATE
 export const createNote = async (title: any, body: any, session: any) => {
