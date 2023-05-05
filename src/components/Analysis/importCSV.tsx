@@ -60,6 +60,7 @@ const ImportCSV: NextPage = () => {
     },
     onChange(info) {
       if (info.file.status !== "uploading") {
+        message.success(`${info.file.name}  uploaded successfully`);
       }
       if (info.file.status === "done") {
         message.success(`${info.file.name}  uploaded successfully`);
@@ -89,9 +90,11 @@ const ImportCSV: NextPage = () => {
             console.log(collapsed, type);
           }}
           style={{
+            overflow: "auto",
             height: "100vh",
             left: 0,
             top: 0,
+            position: "sticky",
             bottom: 0,
             background: colorBgContainer,
           }}
@@ -99,7 +102,13 @@ const ImportCSV: NextPage = () => {
           <Menu
             theme="light"
             mode="inline"
-            style={{ height: "100%", borderRight: 0 }}
+            style={{
+              height: "100vh",
+              left: 0,
+              top: 0,
+              bottom: 0,
+              borderRight: 0,
+            }}
             items={items2}
             defaultOpenKeys={["sub1"]}
           />
@@ -121,6 +130,7 @@ const ImportCSV: NextPage = () => {
               margin: "24px 16px 0",
               background: colorBgContainer,
               borderRadius: "7px",
+              overflow: "initial",
             }}
           >
             <div
@@ -129,13 +139,17 @@ const ImportCSV: NextPage = () => {
                 minHeight: 360,
               }}
             >
-              {csvData? Object.values(csvData).map((value: any, key: any) => {
-                return (
-                  <>
-                    <p key={key}>{value[0]} | {value[1]}</p>
-                  </>
-                );
-              }) : ""}
+              {csvData
+                ? Object.values(csvData).map((value: any, key: any) => {
+                    return (
+                      <>
+                        <p key={key}>
+                          {value[0]} | {value[1]}
+                        </p>
+                      </>
+                    );
+                  })
+                : ""}
             </div>
           </Content>
           <Footer style={{ textAlign: "center" }}>
