@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FileExcelOutlined, UserOutlined } from "@ant-design/icons";
-import { Col, Layout, Menu, MenuProps, Row, theme } from "antd";
+import { Col, Layout, List, Menu, MenuProps, Row, Table, theme } from "antd";
 import type { NextPage } from "next";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
@@ -15,23 +15,28 @@ const kvArray = [
   { index: 3, value: 30 },
 ];
 
-const items2: MenuProps["items"] = [FileExcelOutlined].map((icon, index) => {
-  const key = String(index + 1);
-  return {
-    key: `sub${key}`,
-    icon: React.createElement(icon),
-    label: `Storage .CSV`,
-
-    children: kvArray.map((value: any, index: any) => {
-      return {
-        key: index,
-        label: `file name: ${value.value}`,
-      };
-    }),
-  };
-});
 const ImportCSV: NextPage = () => {
-  const [csvData, setCsvData] = useState<any>(null);
+  const [fileCSV, setfileCSV] = useState<any>([{ name: "", data: "" }]);
+  const [selectCSV, setselectCSV] = useState<number>(0);
+  
+  const items2: MenuProps["items"] = [FileExcelOutlined].map((icon, index) => {
+    const key = String(index + 1);
+    return {
+      key: `sub${key}`,
+      icon: React.createElement(icon),
+      label: `Storage .CSV`,
+
+      children: Object.values(fileCSV).map((value: any, index: any) => {
+        if (value.name === "") {
+          return;
+        }
+        return {
+          key: index,
+          label: `${value.name}`,
+        };
+      }),
+    };
+  });
 
   const handleFileUpload = (file: any) => {
     const reader = new FileReader();
@@ -41,7 +46,15 @@ const ImportCSV: NextPage = () => {
         encoding: "utf-8",
         delimiter: ",",
       } as any);
-      setCsvData(Object.assign({}, parsedData.data));
+
+      const adaptedData = parsedData.data
+        .slice(0, -1)
+        .map((innerArray: any) => ({
+          No: innerArray[0],
+          Sentiment: innerArray[1],
+        }));
+      setfileCSV([...fileCSV, { name: `${file.name}`, data: adaptedData }]);
+      setselectCSV(fileCSV.length);
     };
     reader.readAsText(file, "UTF-8");
   };
@@ -74,7 +87,10 @@ const ImportCSV: NextPage = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  console.log("csvData: ", csvData);
+  const onClick: MenuProps["onClick"] = (e) => {
+    console.log("click ", e);
+    setselectCSV(e.key as unknown as number);
+  };
 
   return (
     <>
@@ -83,14 +99,7 @@ const ImportCSV: NextPage = () => {
           breakpoint="lg"
           collapsedWidth="0"
           theme="light"
-          onBreakpoint={(broken) => {
-            console.log(broken);
-          }}
-          onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
-          }}
           style={{
-            overflow: "auto",
             height: "100vh",
             left: 0,
             top: 0,
@@ -111,6 +120,8 @@ const ImportCSV: NextPage = () => {
             }}
             items={items2}
             defaultOpenKeys={["sub1"]}
+            selectedKeys={[selectCSV.toString()]}
+            onClick={onClick}
           />
         </Sider>
         <Layout style={{ backgroundColor: "#F0F2F5" }}>
@@ -139,17 +150,25 @@ const ImportCSV: NextPage = () => {
                 minHeight: 360,
               }}
             >
-              {csvData
-                ? Object.values(csvData).map((value: any, key: any) => {
-                    return (
-                      <>
-                        <p key={key}>
-                          {value[0]} | {value[1]}
-                        </p>
-                      </>
-                    );
-                  })
-                : ""}
+              <Table
+                columns={[
+                  {
+                    title: "No",
+                    dataIndex: "No",
+                    key: "No",
+                    width: "1%",
+                  },
+                  {
+                    title: "Sentiment",
+                    dataIndex: "Sentiment",
+                    key: "Sentiment",
+                    width: "12%",
+                  },
+                ]}
+                dataSource={fileCSV ? fileCSV[selectCSV].data : ""}
+                pagination={{ pageSize: 50 }}
+                scroll={{ y: 540 }}
+              />
             </div>
           </Content>
           <Footer style={{ textAlign: "center" }}>
