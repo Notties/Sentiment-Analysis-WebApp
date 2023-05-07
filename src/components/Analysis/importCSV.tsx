@@ -1,24 +1,23 @@
 import React, { useState } from "react";
-import { FileExcelOutlined, UserOutlined } from "@ant-design/icons";
-import { Col, Layout, List, Menu, MenuProps, Row, Table, theme } from "antd";
+import { FileExcelOutlined } from "@ant-design/icons";
+import {
+  Layout,
+  Menu,
+  MenuProps,
+  Table,
+  theme,
+} from "antd";
 import type { NextPage } from "next";
-import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
-import { Button, message, Upload } from "antd";
+import { message, Upload } from "antd";
 import Papa from "papaparse";
 
-const { Header, Content, Footer, Sider } = Layout;
-
-const kvArray = [
-  { index: 1, value: 10 },
-  { index: 2, value: 20 },
-  { index: 3, value: 30 },
-];
+const { Content, Footer, Sider } = Layout;
 
 const ImportCSV: NextPage = () => {
   const [fileCSV, setfileCSV] = useState<any>([{ name: "", data: "" }]);
   const [selectCSV, setselectCSV] = useState<number>(0);
-  
+
   const items2: MenuProps["items"] = [FileExcelOutlined].map((icon, index) => {
     const key = String(index + 1);
     return {
@@ -51,7 +50,7 @@ const ImportCSV: NextPage = () => {
         .slice(0, -1)
         .map((innerArray: any) => ({
           No: innerArray[0],
-          Sentiment: innerArray[1],
+          Text: innerArray[1],
         }));
       setfileCSV([...fileCSV, { name: `${file.name}`, data: adaptedData }]);
       setselectCSV(fileCSV.length);
@@ -156,17 +155,20 @@ const ImportCSV: NextPage = () => {
                     title: "No",
                     dataIndex: "No",
                     key: "No",
-                    width: "1%",
+                    width: "20%",
                   },
                   {
-                    title: "Sentiment",
-                    dataIndex: "Sentiment",
-                    key: "Sentiment",
-                    width: "12%",
+                    title: "Text",
+                    dataIndex: "Text",
+                    key: "Text",
+                    width: "80%",
                   },
                 ]}
-                dataSource={fileCSV ? fileCSV[selectCSV].data : ""}
-                pagination={{ pageSize: 50 }}
+                dataSource={fileCSV ? fileCSV[selectCSV].data : []}
+                pagination={{
+                  defaultCurrent: 1,
+                  pageSizeOptions: [10, 50, 100],
+                }}
                 scroll={{ y: 540 }}
               />
             </div>
