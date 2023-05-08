@@ -39,7 +39,7 @@ const Home: NextPage = () => {
     try {
       message.loading("Analyzing...");
       setLoading(false)
-      const res = await fetch("https://f134-2403-6200-88a2-e015-c2f-5689-29f5-9732.ngrok-free.app/sentiment/", {
+      const res = await fetch("http://127.0.0.1:8000/sentiment/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,10 +152,10 @@ const Home: NextPage = () => {
                           ? "blue"
                           : dataSentiment.data.sentiment === "negative"
                           ? "red"
-                          : "green"}>{dataSentiment.data.percentage}%</Tag>
+                          : "green"}>{dataSentiment.data.percentage ? dataSentiment.data.percentage :  50}%</Tag>
                       </Space>
                       <Progress
-                        percent={dataSentiment.data.percentage}
+                        percent={dataSentiment.data.percentage ? dataSentiment.data.percentage :  50}
                         status={!dataSentiment.data.sentiment
                           ? "normal"
                           : dataSentiment.data.sentiment === "neutral"
@@ -167,7 +167,7 @@ const Home: NextPage = () => {
                       />
                     </Row>
                   </div>
-                  <Divider style={{ margin: "23px 0px" }} />
+                  {/* <Divider style={{ margin: "23px 0px" }} />
                   <Row justify={"space-between"}>
                     <p className="font-semibold text-gray-500 ">Intent</p>
                     <Space size={[0, 8]} wrap>
@@ -176,7 +176,7 @@ const Home: NextPage = () => {
                       <Tag color="volcano">Question</Tag>
                     </Space>
                   </Row>
-                  <Divider style={{ margin: "23px 0px" }} />
+                  <Divider style={{ margin: "23px 0px" }} /> */}
                 </>
               )}
             </Card>
