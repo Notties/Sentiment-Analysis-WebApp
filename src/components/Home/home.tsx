@@ -35,11 +35,14 @@ const Home: NextPage = () => {
     return userId.userId;
   }
 
+  
+  
   const sendAPI = async () => {
+    console.log("form ",form.getFieldValue([]).Text.toString());
     try {
       message.loading("Analyzing...");
       setLoading(false)
-      const res = await fetch("http://127.0.0.1:8000/sentiment/", {
+      const res = await fetch("https://8f6d-122-154-3-168.ap.ngrok.io/sentiment/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
