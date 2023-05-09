@@ -77,7 +77,7 @@ const ImportCSV: NextPage = () => {
     });
     try {
       message.loading("Analyzing...", 10000);
-      const res = await fetch("https://8f6d-122-154-3-168.ap.ngrok.io/predictTextObject/", {
+      const res = await fetch("https://0ffb-122-154-3-168.ngrok-free.app/predictTextObject/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

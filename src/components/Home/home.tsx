@@ -42,7 +42,7 @@ const Home: NextPage = () => {
     try {
       message.loading("Analyzing...");
       setLoading(false)
-      const res = await fetch("https://8f6d-122-154-3-168.ap.ngrok.io/sentiment/", {
+      const res = await fetch("https://0ffb-122-154-3-168.ngrok-free.app/sentiment/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -141,12 +141,12 @@ const Home: NextPage = () => {
                           ? "text-red-400"
                           : "text-green-600"}`}>
                         {!dataSentiment.data.sentiment
-                          ? "Neutral"
+                          ? "🤨 Neutral"
                           : dataSentiment.data.sentiment === "neutral"
-                          ? "Neutral"
+                          ? "🤨 Neutral"
                           : dataSentiment.data.sentiment === "negative"
-                          ? "Negative"
-                          : "Positive"}
+                          ? "☹️ Negative"
+                          : "😄 Positive"}
                       </p>
                       <Space size={[0, 8]} wrap>
                         <Tag color={!dataSentiment.data.sentiment
