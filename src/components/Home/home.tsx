@@ -34,8 +34,10 @@ const Home: NextPage = () => {
     setuserId(userId.userId);
     return userId.userId;
   }
-
+  
+  
   const sendAPI = async () => {
+    console.log("form ",form.getFieldValue([]).Text.toString());
     try {
       message.loading("Analyzing...");
       setLoading(false)
@@ -138,12 +140,12 @@ const Home: NextPage = () => {
                           ? "text-red-400"
                           : "text-green-600"}`}>
                         {!dataSentiment.data.sentiment
-                          ? "Neutral"
+                          ? "🤨 Neutral"
                           : dataSentiment.data.sentiment === "neutral"
-                          ? "Neutral"
+                          ? "🤨 Neutral"
                           : dataSentiment.data.sentiment === "negative"
-                          ? "Negative"
-                          : "Positive"}
+                          ? "☹️ Negative"
+                          : "😄 Positive"}
                       </p>
                       <Space size={[0, 8]} wrap>
                         <Tag color={!dataSentiment.data.sentiment
