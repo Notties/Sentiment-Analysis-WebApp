@@ -5,6 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Tabs } from "antd";
 import ImportCSV from "@/src/components/Analysis/importCSV";
+import Facebook from "@/src/components/Analysis/facebook";
 import type { NextPage } from "next";
 
 const analysis: NextPage = () => {
@@ -35,7 +36,7 @@ const analysis: NextPage = () => {
                 Face book
               </div>
             ),
-            children: "Face book",
+            children: <Facebook />,
           },
         ]}
       />

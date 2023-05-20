@@ -161,6 +161,22 @@ const ImportCSV: NextPage = () => {
     }
   };
 
+  const renderSentiment = (value: string) => {
+    let color = "";
+    let sentiment = "";
+    if (value === "positive") {
+      sentiment = "Positive"
+      color = "green";
+    } else if (value === "negative") {
+      sentiment = "Negative"
+      color = "red";
+    } else if (value === "neutral") {
+      sentiment = "Neutral"
+      color = "blue";
+    }
+    return <span style={{ color }}>{sentiment}</span>;
+  };
+
   return (
     <>
       <Layout style={{ backgroundColor: "#F0F2F5" }}>
@@ -300,6 +316,7 @@ const ImportCSV: NextPage = () => {
                         dataIndex: "Sentiment",
                         key: "Sentiment",
                         width: "25%",
+                        render: renderSentiment, // Apply custom render function
                       },
                       {
                         title: "Percentage",
