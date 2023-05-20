@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   Col,
   Divider,
@@ -24,6 +25,24 @@ const Home: NextPage = () => {
   const [form] = Form.useForm();
   const { data: session } = useSession();
 
+  const [loadings, setLoadings] = useState<boolean[]>([]);
+
+  const enterLoading = (index: number) => {
+    setLoadings((prevLoadings) => {
+      const newLoadings = [...prevLoadings];
+      newLoadings[index] = true;
+      return newLoadings;
+    });
+
+    setTimeout(() => {
+      setLoadings((prevLoadings) => {
+        const newLoadings = [...prevLoadings];
+        newLoadings[index] = false;
+        return newLoadings;
+      });
+    }, 1000);
+  };
+
   async function GetUserId() {
     const res = await fetch("/api/userId", {
       method: "POST",
@@ -34,14 +53,13 @@ const Home: NextPage = () => {
     setuserId(userId.userId);
     return userId.userId;
   }
-  
-  
+
   const sendAPI = async () => {
-    console.log("form ",form.getFieldValue([]).Text.toString());
+    console.log("form ", form.getFieldValue([]).Text.toString());
     try {
       message.loading("Analyzing...");
-      setLoading(false)
-      const res = await fetch("https://1eb5-2403-6200-88a2-e015-458d-a445-16f0-be80.ngrok-free.app/predict/", {
+      setLoading(false);
+      const res = await fetch("https://207a-2403-6200-88a2-e015-6d9c-5547-3578-4d12.ngrok-free.app/predict/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,12 +70,12 @@ const Home: NextPage = () => {
       console.log("result", result);
       message.destroy();
       message.success("Analyzer success!");
-      setLoading(true)
+      setLoading(true);
       setDataSentiment(result);
     } catch (error) {
       message.destroy();
       message.error("Analyzer error!");
-      setLoading(true)
+      setLoading(true);
       console.error(error);
     }
   };
@@ -101,21 +119,25 @@ const Home: NextPage = () => {
                     placeholder="Type something :)"
                     allowClear
                     style={{ height: 150, resize: "none" }}
-                    maxLength={255}
+                    maxLength={500}
                     showCount
                   />
                 </Form.Item>
                 <Form.Item>
                   <Space>
-                    <button
-                      className="flex sm:inline-flex justify-center items-center 
-                bg-blue-500 hover:bg-blue-600 active:bg-blue-700 focus-visible:ring 
-                ring-blue-300 text-white text-center rounded-md outline-none 
-                transition duration-200 px-5 py-2 mt-5"
-                      type="submit"
+                    <Button
+                      type="primary"
+                      loading={!loading}
+                      onClick={() => enterLoading(0)}
+                      htmlType="submit"
+                      style={{
+                        background: "#1890ff",
+                        borderColor: "#1890ff",
+                      }}
+                      size="large"
                     >
                       Analyzer
-                    </button>
+                    </Button>
                   </Space>
                 </Form.Item>
               </Form>
@@ -132,13 +154,17 @@ const Home: NextPage = () => {
                 <>
                   <div>
                     <Row justify={"space-between"}>
-                      <p className={`font-semibold ${!dataSentiment.data.sentiment
-                          ? "text-blue-400"
-                          : dataSentiment.data.sentiment === "neutral"
-                          ? "text-blue-400"
-                          : dataSentiment.data.sentiment === "negative"
-                          ? "text-red-400"
-                          : "text-green-600"}`}>
+                      <p
+                        className={`font-semibold ${
+                          !dataSentiment.data.sentiment
+                            ? "text-blue-400"
+                            : dataSentiment.data.sentiment === "neutral"
+                            ? "text-blue-400"
+                            : dataSentiment.data.sentiment === "negative"
+                            ? "text-red-400"
+                            : "text-green-600"
+                        }`}
+                      >
                         {!dataSentiment.data.sentiment
                           ? "🤨 Neutral"
                           : dataSentiment.data.sentiment === "neutral"
@@ -148,23 +174,38 @@ const Home: NextPage = () => {
                           : "😄 Positive"}
                       </p>
                       <Space size={[0, 8]} wrap>
-                        <Tag color={!dataSentiment.data.sentiment
-                          ? "blue"
-                          : dataSentiment.data.sentiment === "neutral"
-                          ? "blue"
-                          : dataSentiment.data.sentiment === "negative"
-                          ? "red"
-                          : "green"}>{dataSentiment.data.percentage ? dataSentiment.data.percentage :  50}%</Tag>
+                        <Tag
+                          color={
+                            !dataSentiment.data.sentiment
+                              ? "blue"
+                              : dataSentiment.data.sentiment === "neutral"
+                              ? "blue"
+                              : dataSentiment.data.sentiment === "negative"
+                              ? "red"
+                              : "green"
+                          }
+                        >
+                          {dataSentiment.data.percentage
+                            ? dataSentiment.data.percentage
+                            : 50}
+                          %
+                        </Tag>
                       </Space>
                       <Progress
-                        percent={dataSentiment.data.percentage ? dataSentiment.data.percentage :  50}
-                        status={!dataSentiment.data.sentiment
-                          ? "normal"
-                          : dataSentiment.data.sentiment === "neutral"
-                          ? "normal"
-                          : dataSentiment.data.sentiment === "negative"
-                          ? "exception"
-                          : "success"}
+                        percent={
+                          dataSentiment.data.percentage
+                            ? dataSentiment.data.percentage
+                            : 50
+                        }
+                        status={
+                          !dataSentiment.data.sentiment
+                            ? "normal"
+                            : dataSentiment.data.sentiment === "neutral"
+                            ? "normal"
+                            : dataSentiment.data.sentiment === "negative"
+                            ? "exception"
+                            : "success"
+                        }
                         showInfo={false}
                       />
                     </Row>

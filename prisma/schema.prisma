@@ -47,6 +47,17 @@ model Note {
   @@unique([id, userId])
 }
 
+model ObjectCSV {
+  id    String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId String
+  filename  String
+  text   String
+  sentiment String
+  percentage String
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model User {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
@@ -56,6 +67,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   notes         Note[]
+  objectCSV     ObjectCSV[]
 }
 
 model VerificationToken {
@@ -65,3 +77,4 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
