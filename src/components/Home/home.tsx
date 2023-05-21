@@ -59,7 +59,7 @@ const Home: NextPage = () => {
     try {
       message.loading("Analyzing...");
       setLoading(false);
-      const res = await fetch("https://c2b8-2403-6200-88a2-e015-6d9c-5547-3578-4d12.ngrok-free.app/predict/", {
+      const res = await fetch("https://7f5e-2403-6200-88a2-e015-6d9c-5547-3578-4d12.ngrok-free.app/predict/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
