@@ -1,11 +1,11 @@
 import React from "react";
 import {
   CloudUploadOutlined,
-  FacebookOutlined,
+  LineChartOutlined,
 } from "@ant-design/icons";
 import { Tabs } from "antd";
 import ImportCSV from "@/src/components/Analysis/importCSV";
-import Facebook from "@/src/components/Analysis/facebook";
+import Websites from "@/src/components/Analysis/websites";
 import type { NextPage } from "next";
 
 const analysis: NextPage = () => {
@@ -30,13 +30,13 @@ const analysis: NextPage = () => {
             key: "2",
             label: (
               <div className="px-7">
-                <FacebookOutlined
+                <LineChartOutlined
                   style={{ fontSize: 18, verticalAlign: "text-top"}}
                 />
-                Face book
+                Websites
               </div>
             ),
-            children: <Facebook />,
+            children: <Websites />,
           },
         ]}
       />
