@@ -132,7 +132,7 @@ const websites = () => {
       }
     });
     try {
-      message.loading("Analyzing...", 10000);
+      message.loading("Analyzing all comments...", 10000);
       const res = await fetch("http://127.0.0.1:8000/predictObject/", {
         method: "POST",
         headers: {
