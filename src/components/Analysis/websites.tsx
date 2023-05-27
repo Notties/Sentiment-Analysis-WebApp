@@ -91,6 +91,9 @@ const websites = () => {
   };
 
   const sendAPIGetComment = async () => {
+    setdone(false);
+    setdataAPI([])
+    setdataresult([])
     console.log("form ", form.getFieldValue([]).Text.toString());
     try {
       message.loading("Fetching comments...", 90000);
