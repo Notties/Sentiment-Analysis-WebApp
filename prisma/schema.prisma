@@ -49,13 +49,14 @@ model Note {
 
 model ObjectCSV {
   id    String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId String
+  userId String?
   filename  String
   text   String
   sentiment String
   percentage String
 
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([id, userId])
 }
 
 model User {

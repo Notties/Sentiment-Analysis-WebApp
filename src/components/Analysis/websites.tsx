@@ -13,6 +13,7 @@ import {
   theme,
 } from "antd";
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 
 const { Content, Footer } = Layout;
 
@@ -31,6 +32,8 @@ const websites = () => {
   const [done, setdone] = useState(false);
   const textArray: { Text: string }[] = [];
   const [loadings, setLoadings] = useState<boolean[]>([]);
+  const { data: session } = useSession();
+  const [userId, setuserId] = useState("");
 
   const enterLoading = (index: number) => {
     setLoadings((prevLoadings) => {
@@ -47,6 +50,24 @@ const websites = () => {
       });
     }, 1000);
   };
+
+  async function GetUserId() {
+    try {
+      const res = await fetch("/api/userId", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: session?.user?.email as string }),
+      });
+      const userId = await res.json();
+      setuserId(userId.userId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  React.useEffect(() => {
+    GetUserId();
+  }, [session]);
 
   const calculate: any = () => {
     let total: any;
@@ -79,21 +100,44 @@ const websites = () => {
     let sentiment = "";
     if (value === "positive") {
       sentiment = "Positive";
-      color = "green";
+      color = `text-green-600`;
     } else if (value === "negative") {
       sentiment = "Negative";
-      color = "red";
+      color = `text-red-400`;
     } else if (value === "neutral") {
-      sentiment = "Neutral";
-      color = "blue";
+      sentiment = `Neutral`;
+      color = `text-blue-400`;
     }
-    return <span style={{ color }}>{sentiment}</span>;
+
+    return <p className={`font-semibold ${color}`}>{sentiment}</p>;
+  };
+
+  const renderPercent = (value: string, index: any) => {
+    return (
+      <Tag
+        color={
+          !index.Sentiment
+            ? "blue"
+            : index.Sentiment === "neutral"
+            ? "blue"
+            : index.Sentiment === "negative"
+            ? "red"
+            : "green"
+        }
+      >
+        {value ? value : 50}%
+      </Tag>
+    );
   };
 
   const sendAPIGetComment = async () => {
+    if (!userId) {
+      message.error("Please sing in for Fetching!");
+      return;
+    }
     setdone(false);
-    setdataAPI([])
-    setdataresult([])
+    setdataAPI([]);
+    setdataresult([]);
     console.log("form ", form.getFieldValue([]).Text.toString());
     try {
       message.loading("Fetching comments...", 90000);
@@ -125,8 +169,8 @@ const websites = () => {
   }, [done]);
 
   React.useEffect(() => {
-    calculate()
-  }, [dataresult && dataresult.data])
+    calculate();
+  }, [dataresult && dataresult.data]);
 
   const sendAPI = async () => {
     await dataAPI.forEach((item: any) => {
@@ -338,6 +382,7 @@ const websites = () => {
                       dataIndex: "Percentage",
                       key: "Percentage",
                       width: "25%",
+                      render: renderPercent,
                     },
                   ]}
                   dataSource={dataresult.data}

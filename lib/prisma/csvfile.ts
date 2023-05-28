@@ -9,7 +9,11 @@ interface ObjectCSV {
   Percentage: string;
 }
 
-async function saveObjectCSVToMongoDB(data: ObjectCSV[], userId: string, filename: string) {
+async function saveObjectCSVToMongoDB(
+  data: ObjectCSV[],
+  userId: string,
+  filename: string
+) {
   await prisma.objectCSV.createMany({
     data: data.map((item) => ({
       filename: filename,
@@ -21,7 +25,11 @@ async function saveObjectCSVToMongoDB(data: ObjectCSV[], userId: string, filenam
   });
 }
 
-async function addObjectCSV(data: ObjectCSV[], userId: string, filename: string) {
+async function addObjectCSV(
+  data: ObjectCSV[],
+  userId: string,
+  filename: string
+) {
   await saveObjectCSVToMongoDB(data, userId, filename);
 }
 
@@ -29,15 +37,26 @@ async function editObjectCSV(id: string, data: any) {
   await prisma.objectCSV.update({ where: { id }, data });
 }
 
-async function deleteObjectCSV(id: string) {
-  await prisma.objectCSV.delete({ where: { id } });
+async function deleteObjectCSV(userId: any, id: any) {
+  console.log("userId + id",userId, id);
+  await prisma.objectCSV.delete({
+    where: {
+      id_userId: {
+        id: userId,
+        userId: id
+      }
+    },
+  });
 }
 
 async function getObjectCSVs(userId: string) {
   return prisma.objectCSV.findMany({ where: { userId } });
 }
 
-async function getObjectCSVByUserIdAndFilename(userId: string, filename: string) {
+async function getObjectCSVByUserIdAndFilename(
+  userId: string,
+  filename: string
+) {
   return prisma.objectCSV.findMany({
     where: {
       userId: userId,
@@ -45,7 +64,6 @@ async function getObjectCSVByUserIdAndFilename(userId: string, filename: string)
     },
   });
 }
-
 
 export {
   addObjectCSV,

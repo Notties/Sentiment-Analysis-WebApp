@@ -163,7 +163,7 @@ const Nav = () => {
                     href="/apidocs"
                     className="block py-2 pl-3 pr-4 text-gray-400 rounded hover:bg-gray-100 hover:text-gray-500"
                   >
-                    TestData
+                    API Docs
                   </Link>
                 </li>
               </ul>
@@ -202,7 +202,7 @@ const Nav = () => {
                 md:hover:text-blue-500 
                   md:p-0 "
                   >
-                    TestData
+                    API Docs
                   </Link>
                 </li>
               </ul>

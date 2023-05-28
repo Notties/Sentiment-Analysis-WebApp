@@ -15,6 +15,7 @@ import type { NextPage } from "next";
 import type { UploadProps } from "antd";
 import { message, Upload } from "antd";
 import Papa from "papaparse";
+import { useSession } from "next-auth/react";
 
 const { Content, Footer, Sider } = Layout;
 
@@ -22,28 +23,49 @@ const ImportCSV: NextPage = () => {
   const [fileCSV, setfileCSV] = useState<any>([
     { name: "", data: [{ Text: "" }] },
   ]);
+  const [loadfileCSV, setloadfileCSV] = useState<any>([
+    { name: "", data: [{ Text: "" }] },
+  ]);
+  const [datafilecsv, setdatafilecsv] = useState<any>([]);
   const [dataAPI, setdataAPI] = useState<any>([]);
   const textArray: { Text: string }[] = [];
-  const [selectCSV, setselectCSV] = useState<number>(0);
+  let [selectCSV, setselectCSV] = useState<number>(1);
   const [positivePercentage, setpositivePercentage] = useState<any>(0);
   const [neutralPercentage, setneutralPercentage] = useState<any>(0);
   const [negativePercentage, setnegativePercentage] = useState<any>(0);
+  const { data: session } = useSession();
+  const [userId, setuserId] = useState("");
+  const [filename, setfilename] = useState("");
+  const [done, setdone] = useState(false);
+  const [dones, setdones] = useState(false);
 
   const items2: MenuProps["items"] = [FileExcelOutlined].map((icon, index) => {
     const key = String(index + 1);
+    let idx = 0;
+    let filenameprev = "";
+    let filenamenew = "";
     return {
       key: `sub${key}`,
       icon: React.createElement(icon),
       label: `Storage .CSV`,
 
-      children: Object.values(fileCSV).map((value: any, index: any) => {
-        if (value.name === "") {
+      children: Object.values(datafilecsv).map((value: any, index: any) => {
+        if (value.filename === "") {
           return;
         }
-        return {
-          key: index,
-          label: `${value.name}`,
-        };
+        if (value.filename) {
+          filenamenew = value.filename;
+          if (filenamenew === filenameprev) {
+            return;
+          } else {
+            idx++;
+            filenameprev = value.filename;
+            return {
+              key: idx,
+              label: `${filenameprev}`,
+            };
+          }
+        }
       }),
     };
   });
@@ -69,7 +91,94 @@ const ImportCSV: NextPage = () => {
     reader.readAsText(file, "UTF-8");
   };
 
+  async function GetUserId() {
+    try {
+      const res = await fetch("/api/userId", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: session?.user?.email as string }),
+      });
+      const userId = await res.json();
+      setuserId(userId.userId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function GetfilebyId() {
+    try {
+      const res = await fetch(`/api/objectcsv?userId=${userId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const datafile = await res.json();
+      setdatafilecsv(datafile);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  console.log("datafilecsv", datafilecsv);
+
+  React.useEffect(() => {
+    GetUserId();
+  }, [session]);
+
+  console.log("userId", userId);
+
+  React.useEffect(() => {
+    if (userId) {
+      GetfilebyId();
+      calculateProps(loadfileCSV[0]);
+    }
+  }, [userId]);
+
+  React.useEffect(() => {
+    let loadfileCSVCopy = [...loadfileCSV]; // Create a copy of loadfileCSV
+    Object.values(datafilecsv).forEach((value: any, index: any) => {
+      if (value.filename) {
+        const existingFileIndex = loadfileCSVCopy.findIndex(
+          (file) => file.name === value.filename
+        );
+        if (existingFileIndex !== -1) {
+          // File with same name already exists
+          const existingData = loadfileCSVCopy[existingFileIndex].data;
+
+          if (!loadfileCSVCopy[index]?.data[0]?.sentiment) {
+            loadfileCSVCopy[existingFileIndex].data.push(value);
+          }
+        } else {
+          // File with new name
+          loadfileCSVCopy.push({
+            name: value.filename,
+            data: [value],
+          });
+        }
+      }
+    });
+
+    // Remove the first index if it has null data
+    if (
+      loadfileCSVCopy[0]?.data?.length === 1 &&
+      loadfileCSVCopy[0]?.data[0]?.Text === ""
+    ) {
+      loadfileCSVCopy.shift();
+    }
+
+    setloadfileCSV(loadfileCSVCopy);
+  }, [datafilecsv]);
+
+  React.useEffect(() => {
+    calculateProps(loadfileCSV[selectCSV - 1]);
+  }, [loadfileCSV]);
+
+  console.log("loadfileCSV", loadfileCSV);
+
   const sendAPI = async () => {
+    if (!userId) {
+      message.error("Please sing in for analysis!");
+      return;
+    }
     await fileCSV[selectCSV].data.forEach((item: any) => {
       if (item.Text) {
         textArray.push({ Text: item.Text });
@@ -103,6 +212,7 @@ const ImportCSV: NextPage = () => {
     showUploadList: false,
     beforeUpload: (file) => {
       console.log("file", file);
+      setfilename(file.name);
       handleFileUpload(file);
       return true;
     },
@@ -111,26 +221,66 @@ const ImportCSV: NextPage = () => {
     },
     onChange(info) {
       if (info.file.status === "done") {
-        sendAPI();
-        message.success(`${info.file.name}  uploaded successfully!`);
+        if (!userId) {
+          message.error("Please sing in for upload csv!");
+          return;
+        } else {
+          sendAPI();
+          message.success(`${info.file.name}  uploaded successfully!`);
+        }
       } else if (info.file.status === "error") {
         message.error(`${info.file.name}  upload failed.`);
       }
     },
   };
-  
+
+  const savefileDB = async () => {
+    if (!userId) {
+      message.error("Please sing in for save file!");
+      return;
+    }
+    try {
+      message.loading("Save file...", 10000);
+      const res = await fetch("/api/objectcsv", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: dataAPI.data,
+          userId: userId,
+          filename: filename,
+        }),
+      });
+      const result = await res.json();
+      console.log("result", result);
+      message.destroy();
+      message.success("Save file success!");
+    } catch (error) {
+      message.destroy();
+      message.error("Save file error!");
+      console.error(error);
+    }
+    GetfilebyId();
+    setdone(false);
+  };
+
   React.useEffect(() => {
-    calculate()
-  }, [dataAPI && dataAPI.data])
-  
+    setdone(false);
+    calculate();
+    calculateProps(loadfileCSV[selectCSV - 1]);
+    if (done) {
+      savefileDB();
+    }
+  }, [dataAPI && dataAPI.data]);
 
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
   const onClick: MenuProps["onClick"] = (e) => {
-    console.log("click ", e);
     setselectCSV(e.key as unknown as number);
+    calculateProps(loadfileCSV[(e.key as unknown as number) - 1]);
   };
 
   console.log("dataAPI.data", dataAPI.data);
@@ -159,23 +309,74 @@ const ImportCSV: NextPage = () => {
       setneutralPercentage(0);
       setnegativePercentage(0);
     }
+    setdone(true);
+  };
+
+  const calculateProps: any = (props: any) => {
+    let total: any;
+    let positiveCount = 0;
+    let neutralCount = 0;
+    let negativeCount = 0;
+    if (props) {
+      console.log("props", props);
+
+      total = props?.data?.length;
+      props?.data?.forEach((item: any, index: any) => {
+        if (item.sentiment === "positive") {
+          positiveCount++;
+        } else if (item.sentiment === "neutral") {
+          neutralCount++;
+        } else if (item.sentiment === "negative") {
+          negativeCount++;
+        }
+      });
+      setpositivePercentage(((positiveCount / total) * 100).toFixed(0));
+      setneutralPercentage(((neutralCount / total) * 100).toFixed(0));
+      setnegativePercentage(((negativeCount / total) * 100).toFixed(0));
+    } else {
+      setpositivePercentage(0);
+      setneutralPercentage(0);
+      setnegativePercentage(0);
+    }
+    setdone(true);
   };
 
   const renderSentiment = (value: string) => {
     let color = "";
     let sentiment = "";
     if (value === "positive") {
-      sentiment = "Positive"
-      color = "green";
+      sentiment = "Positive";
+      color = `text-green-600`;
     } else if (value === "negative") {
-      sentiment = "Negative"
-      color = "red";
+      sentiment = "Negative";
+      color = `text-red-400`;
     } else if (value === "neutral") {
-      sentiment = "Neutral"
-      color = "blue";
+      sentiment = `Neutral`;
+      color = `text-blue-400`;
     }
-    return <span style={{ color }}>{sentiment}</span>;
+
+    return <p className={`font-semibold ${color}`}>{sentiment}</p>;
   };
+
+  const renderPercent = (value: string, index: any) => {
+    return (
+      <Tag
+        color={
+          !index.sentiment
+            ? "blue"
+            : index.sentiment === "neutral"
+            ? "blue"
+            : index.sentiment === "negative"
+            ? "red"
+            : "green"
+        }
+      >
+        {value ? value : 50}%
+      </Tag>
+    );
+  };
+
+  console.log("selectCSV", selectCSV);
 
   return (
     <>
@@ -235,7 +436,7 @@ const ImportCSV: NextPage = () => {
                 minHeight: 360,
               }}
             >
-              {!dataAPI.data ? (
+              {!dataAPI.data && !loadfileCSV ? (
                 <Table
                   columns={[
                     {
@@ -307,25 +508,32 @@ const ImportCSV: NextPage = () => {
                     columns={[
                       {
                         title: "Text",
-                        dataIndex: "Text",
-                        key: "Text",
+                        dataIndex: "text",
+                        key: "text",
                         width: "50%",
                       },
                       {
                         title: "Sentiment",
-                        dataIndex: "Sentiment",
-                        key: "Sentiment",
+                        dataIndex: "sentiment",
+                        key: "sentiment",
                         width: "25%",
                         render: renderSentiment, // Apply custom render function
                       },
                       {
                         title: "Percentage",
-                        dataIndex: "Percentage",
-                        key: "Percentage",
+                        dataIndex: "percentage",
+                        key: "percentage",
                         width: "25%",
+                        render: renderPercent,
                       },
                     ]}
-                    dataSource={dataAPI.data}
+                    dataSource={
+                      loadfileCSV.length > 0
+                        ? loadfileCSV[selectCSV - 1]?.data
+                        : loadfileCSV[selectCSV - 1]?.data
+                        ? loadfileCSV[selectCSV - 1]?.data
+                        : []
+                    }
                     pagination={{
                       defaultCurrent: 1,
                       pageSizeOptions: [10, 50, 100],
