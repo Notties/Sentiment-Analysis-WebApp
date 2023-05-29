@@ -1,9 +1,15 @@
 import React, { useState } from "react";
-import { FileExcelOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  FileExcelOutlined,
+  QuestionCircleOutlined,
+  QuestionCircleTwoTone,
+} from "@ant-design/icons";
 import {
   Layout,
   Menu,
   MenuProps,
+  Modal,
   Progress,
   Row,
   Space,
@@ -39,6 +45,22 @@ const ImportCSV: NextPage = () => {
   const [done, setdone] = useState(false);
   const [dones, setdones] = useState(false);
 
+  type MenuItem = Required<MenuProps>["items"][number];
+
+  function getItem(
+    label: React.ReactNode,
+    key: React.Key,
+    icon?: React.ReactNode,
+    children?: MenuItem[]
+  ): MenuItem {
+    return {
+      key,
+      icon,
+      label,
+      children,
+    } as MenuItem;
+  }
+
   const items2: MenuProps["items"] = [FileExcelOutlined].map((icon, index) => {
     const key = String(index + 1);
     let idx = 0;
@@ -48,7 +70,6 @@ const ImportCSV: NextPage = () => {
       key: `sub${key}`,
       icon: React.createElement(icon),
       label: `Storage .CSV`,
-
       children: Object.values(datafilecsv).map((value: any, index: any) => {
         if (value.filename === "") {
           return;
@@ -69,6 +90,13 @@ const ImportCSV: NextPage = () => {
       }),
     };
   });
+
+  const mergedItems: any[] = [
+    ...items2,
+    getItem("Clear all CSV", "-1", <DeleteOutlined />),
+  ];
+
+  const items: any[] = mergedItems;
 
   const handleFileUpload = (file: any) => {
     const reader = new FileReader();
@@ -118,13 +146,11 @@ const ImportCSV: NextPage = () => {
     }
   }
 
-  console.log("datafilecsv", datafilecsv);
-
   React.useEffect(() => {
-    GetUserId();
+    if (session) {
+      GetUserId();
+    }
   }, [session]);
-
-  console.log("userId", userId);
 
   React.useEffect(() => {
     if (userId) {
@@ -169,10 +195,10 @@ const ImportCSV: NextPage = () => {
   }, [datafilecsv]);
 
   React.useEffect(() => {
-    calculateProps(loadfileCSV[selectCSV - 1]);
+    if (session) {
+      calculateProps(loadfileCSV[selectCSV - 1]);
+    }
   }, [loadfileCSV]);
-
-  console.log("loadfileCSV", loadfileCSV);
 
   const sendAPI = async () => {
     if (!userId) {
@@ -194,7 +220,6 @@ const ImportCSV: NextPage = () => {
         body: JSON.stringify({ data: textArray }),
       });
       const result = await res.json();
-      console.log("result", result);
       message.destroy();
       message.success("Analyzer success!");
       setdataAPI(result);
@@ -211,7 +236,6 @@ const ImportCSV: NextPage = () => {
     accept: ".txt, .csv",
     showUploadList: false,
     beforeUpload: (file) => {
-      console.log("file", file);
       setfilename(file.name);
       handleFileUpload(file);
       return true;
@@ -252,8 +276,6 @@ const ImportCSV: NextPage = () => {
           filename: filename,
         }),
       });
-      const result = await res.json();
-      console.log("result", result);
       message.destroy();
       message.success("Save file success!");
     } catch (error) {
@@ -266,11 +288,13 @@ const ImportCSV: NextPage = () => {
   };
 
   React.useEffect(() => {
-    setdone(false);
-    calculate();
-    calculateProps(loadfileCSV[selectCSV - 1]);
-    if (done) {
-      savefileDB();
+    if (session) {
+      setdone(false);
+      calculate();
+      calculateProps(loadfileCSV[selectCSV - 1]);
+      if (done) {
+        savefileDB();
+      }
     }
   }, [dataAPI && dataAPI.data]);
 
@@ -278,12 +302,57 @@ const ImportCSV: NextPage = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const onClick: MenuProps["onClick"] = (e) => {
-    setselectCSV(e.key as unknown as number);
-    calculateProps(loadfileCSV[(e.key as unknown as number) - 1]);
+  async function DelAllCSV() {
+    if (!userId) {
+      return;
+    }
+    message.loading("Clearing files...", 10000);
+    try {
+      await fetch(`/api/objectcsv?userId=${userId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      await GetfilebyId();
+      message.destroy();
+      message.success("Clearing file success!");
+    } catch (error) {
+      console.error(error);
+      message.destroy();
+      message.error("Clear file error!");
+      console.error(error);
+    }
+  }
+
+  const { confirm } = Modal;
+
+  const showDeleteConfirm = () => {
+    confirm({
+      title: "Are you sure clear all file CSV?",
+      icon: <QuestionCircleTwoTone twoToneColor="#FF4D4F" />,
+      content: "Your files will be completely deleted and cannot be recovered.",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        DelAllCSV();
+        setloadfileCSV([]);
+        setfileCSV([{ name: "", data: [{ Text: "" }] }]);
+      },
+      onCancel() {},
+    });
   };
 
-  console.log("dataAPI.data", dataAPI.data);
+  const onClick: MenuProps["onClick"] = (e) => {
+    if(!userId){
+      return
+    }
+    if (e.key === "-1") {
+      showDeleteConfirm();
+    } else {
+      setselectCSV(e.key as unknown as number);
+      calculateProps(loadfileCSV[(e.key as unknown as number) - 1]);
+    }
+  };
 
   const calculate: any = () => {
     let total: any;
@@ -318,8 +387,6 @@ const ImportCSV: NextPage = () => {
     let neutralCount = 0;
     let negativeCount = 0;
     if (props) {
-      console.log("props", props);
-
       total = props?.data?.length;
       props?.data?.forEach((item: any, index: any) => {
         if (item.sentiment === "positive") {
@@ -376,8 +443,6 @@ const ImportCSV: NextPage = () => {
     );
   };
 
-  console.log("selectCSV", selectCSV);
-
   return (
     <>
       <Layout style={{ backgroundColor: "#F0F2F5" }}>
@@ -404,7 +469,7 @@ const ImportCSV: NextPage = () => {
               bottom: 0,
               borderRight: 0,
             }}
-            items={items2}
+            items={items}
             defaultOpenKeys={["sub1"]}
             selectedKeys={[selectCSV.toString()]}
             onClick={onClick}

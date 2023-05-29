@@ -65,11 +65,11 @@ export default async function handler(
   }
   //delete
   else if (req.method === "DELETE") {
-    const { userId, id } = req.body;
+    const { userId } = req.query;
 
     try {
-      await deleteObjectCSV(userId, id);
-      res.status(200).json({ message: "Data deleted successfully" });
+      await deleteObjectCSV(userId as string);
+      res.status(200).json({ message: "Data deleted successfully"});
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Error deleting data" });

@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
@@ -37,14 +38,10 @@ async function editObjectCSV(id: string, data: any) {
   await prisma.objectCSV.update({ where: { id }, data });
 }
 
-async function deleteObjectCSV(userId: any, id: any) {
-  console.log("userId + id",userId, id);
-  await prisma.objectCSV.delete({
+async function deleteObjectCSV(userId: string) {
+  await prisma.objectCSV.deleteMany({
     where: {
-      id_userId: {
-        id: userId,
-        userId: id
-      }
+      userId: userId
     },
   });
 }
