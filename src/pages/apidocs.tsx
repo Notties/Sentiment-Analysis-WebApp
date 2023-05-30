@@ -1,138 +1,223 @@
-import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
-import useStore from "../store/useStore";
-import { Table } from "antd";
-
-interface DataItem {
-  id: string;
-  userId: string;
-  filename: string;
-  text: string;
-  sentiment: string;
-  percentage: string;
-}
+import {
+  Button,
+  Card,
+  Space,
+  Tooltip,
+  message,
+  Tag,
+  Typography,
+  Divider,
+  Layout,
+  Affix,
+} from "antd";
+import { CopyTwoTone } from "@ant-design/icons";
 
 const AboutPage = () => {
-  const { data: session } = useSession();
-  const [data, setData] = useState<DataItem[]>([]);
-  const [loading, setloading] = useState(true);
-  const [userID, setUserID] = useState<string | null>(null);
+  const { Text, Title } = Typography;
 
-  useEffect(() => {
-    const fetchUserID = async () => {
-      if (session && session.user && session.user.email) {
-        const email = {
-          email: session.user.email,
-        };
+  const predict = `{
+    "text": "สวัสดี"
+}`;
 
-        const res = await fetch("/api/userId", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(email),
-        });
-
-        const data = await res.json();
-        setUserID(data.userId);
-        console.log("userID: ", data.userId);
-      }
-    };
-
-    fetchUserID();
-    
-    return () => {
-      // Cleanup code (if any)
-    };
-  }, [session]);
-
-  useEffect(() => {
-    let interval: any;
-    if (userID) {
-      interval = setInterval(fetchObjectCSVData, 3000);
-    }
-    return () => {
-      clearInterval(interval); // Cleanup the interval when the component unmounts
-    };
-  }, [userID]);
-
-  const fetchObjectCSVData = async () => {
-    try {
-      const res = await fetch(`/api/objectcsv?userId=${userID}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+  const predictObject = `{
+    "data": [
+        {
+            "Text": "ดีมากๆเลย สินค้านี้ไปหาซื้อกันได้นะ"
         },
-      });
-      const jsonData = await res.json();
-      console.log("jsonData", jsonData);
-      setData(jsonData);
-      setloading(false)
-    } catch (error) {
-      console.log(error);
+        {
+            "Text": "เสียดายเงินมาก"
+        },
+        {
+            "Text": "สินค้านี้เหมือนจะดีนะ"
+        }
+    ]
+}`;
+
+  const Respredict = `{
+    "status": "success",
+    "data": {
+        "sentiment": "neutral",
+        "percentage": "56"
     }
+}`;
+
+  const RespredictObject = `{
+    "status": "success",
+    "data": [
+        {
+            "Text": "ดีมากๆเลย สินค้านี้ไปหาซื้อกันได้นะ",
+            "Sentiment": "positive",
+            "Percentage": "78"
+        },
+        {
+            "Text": "เสียดายเงินมาก",
+            "Sentiment": "negative",
+            "Percentage": "98"
+        },
+        {
+            "Text": "สินค้านี้เหมือนจะดีนะ",
+            "Sentiment": "neutral",
+            "Percentage": "63"
+        }
+    ]
+}`;
+
+  const handleCopy = () => {
+    // Copy the source code to the clipboard
+    navigator.clipboard.writeText(predict);
+    message.success("Code copied to clipboard");
   };
 
-  const handleGetDataClick = () => {
-    fetchObjectCSVData();
+  const handleCopyObject = () => {
+    // Copy the source code to the clipboard
+    navigator.clipboard.writeText(predictObject);
+    message.success("Code copied to clipboard");
   };
 
-  useEffect(() => {
-    console.log("data:", data);
-  }, [data]);
+  const title1 = (
+    <>
+      <Tag color={"green"}>POST</Tag> <span>http://127.0.0.1:8000/predict</span>
+    </>
+  );
 
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "User ID",
-      dataIndex: "userId",
-      key: "userId",
-    },
-    {
-      title: "Filename",
-      dataIndex: "filename",
-      key: "filename",
-    },
-    {
-      title: "Text",
-      dataIndex: "text",
-      key: "text",
-    },
-    {
-      title: "Sentiment",
-      dataIndex: "sentiment",
-      key: "sentiment",
-    },
-    {
-      title: "Percentage",
-      dataIndex: "percentage",
-      key: "percentage",
-    },
-  ];
+  const title2 = (
+    <>
+      <Tag color={"green"}>POST</Tag>{" "}
+      <span>http://127.0.0.1:8000/predictObject</span>
+    </>
+  );
 
   return (
     <>
-      <button
-        className="flex sm:inline-flex justify-center items-center 
-          bg-blue-500 hover:bg-blue-600 active:bg-blue-700 focus-visible:ring 
-          ring-blue-300 text-white text-center rounded-md outline-none 
-          transition duration-200 px-5 py-2 mt-5"
-        onClick={handleGetDataClick}
-      >
-        Get data
-      </button>
-      <Table
-        columns={columns}
-        dataSource={data}
-        pagination={{
-          defaultCurrent: 1,
-          pageSizeOptions: [10, 50, 100],
-        }}
-        loading={loading}
-        scroll={{ y: 540 }}
-      />
+      <div className="bg-[#F0F2F5] max-h-full">
+        <Space
+          direction="vertical"
+          style={{ display: "flex", justifyContent: "center" }}
+          align="center"
+          wrap
+        >
+          <p
+            className="text-[25px] self-center font-semibold whitespace-nowrap 
+            bg-gradient-to-r from-blue-400 to-pink-400 inline-block text-transparent bg-clip-text text-center"
+          >
+            Sentiment Analysis Restful API
+            <br />
+            power by FastAPI
+          </p>
+          <Affix offsetTop={10}>
+            <Card
+              bordered={false}
+              size="small"
+              className="text-center sm:w-[500px] w-[350px]"
+            >
+              <p
+                className="text-[16px] self-center font-semibold whitespace-nowrap 
+            bg-gradient-to-r from-blue-400 to-pink-400 inline-block text-transparent bg-clip-text text-center"
+              >
+                Prediction Text
+              </p>
+            </Card>
+          </Affix>
+          <Card
+            className="sm:w-[500px] w-[350px]"
+            bordered={false}
+            size="small"
+            title={title1}
+          >
+            <Tag color={"default"} style={{ marginBottom: 5 }}>
+              body -{">"} raw -{">"} json
+            </Tag>
+            <pre
+              style={{ marginBottom: 0 }}
+              className="bg-[#F9FAFC] rounded-lg px-5 pt-3 pb-3"
+            >
+              <code>{predict}</code>
+            </pre>
+            <Tooltip placement="top" title={"Copy"}>
+              <Button
+                type="dashed"
+                onClick={handleCopy}
+                style={{
+                  position: "absolute",
+                  top: 83,
+                  right: 19,
+                  paddingBottom: 10,
+                  width: 28,
+                  height: 28,
+                }}
+                size="small"
+              >
+                <CopyTwoTone />
+              </Button>
+            </Tooltip>
+            <Tag color={"magenta"} style={{ marginTop: 5, marginBottom: 5 }}>
+              Respone
+            </Tag>
+            <pre
+              style={{ marginBottom: 0 }}
+              className="bg-[#F9FAFC] rounded-lg px-5 pt-3 pb-3"
+            >
+              <code>{Respredict}</code>
+            </pre>
+          </Card>
+          <Affix offsetTop={10}>
+            <Card
+              className="text-center sm:w-[500px] w-[350px]"
+              bordered={false}
+              size="small"
+            >
+              <p
+                className="text-[16px] self-center font-semibold whitespace-nowrap 
+            bg-gradient-to-r from-blue-400 to-pink-400 inline-block text-transparent bg-clip-text text-center"
+              >
+                Prediction Object
+              </p>
+            </Card>
+          </Affix>
+          <Card
+            className="sm:w-[500px] w-[350px]"
+            bordered={false}
+            size="small"
+            title={title2}
+          >
+            <Tag color={"default"} style={{ marginBottom: 5 }}>
+              body -{">"} raw -{">"} json
+            </Tag>
+            <pre
+              style={{ marginBottom: 0 }}
+              className="bg-[#F9FAFC] rounded-lg px-5 pt-3 pb-3"
+            >
+              <code>{predictObject}</code>
+            </pre>
+            <Tooltip placement="top" title={"Copy"}>
+              <Button
+                type="dashed"
+                onClick={handleCopyObject}
+                style={{
+                  position: "absolute",
+                  top: 83,
+                  right: 19,
+                  paddingBottom: 10,
+                  width: 28,
+                  height: 28,
+                }}
+                size="small"
+              >
+                <CopyTwoTone />
+              </Button>
+            </Tooltip>
+            <Tag color={"magenta"} style={{ marginTop: 5, marginBottom: 5 }}>
+              Respone
+            </Tag>
+            <pre
+              style={{ marginBottom: 0 }}
+              className="bg-[#F9FAFC] rounded-lg px-5 pt-3 pb-3"
+            >
+              <code>{RespredictObject}</code>
+            </pre>
+          </Card>
+        </Space>
+      </div>
     </>
   );
 };

@@ -2,7 +2,6 @@ import {
   Button,
   Card,
   Col,
-  Divider,
   Form,
   Progress,
   Row,
@@ -14,7 +13,6 @@ import type { NextPage } from "next";
 import { Input } from "antd";
 import { useEffect, useState } from "react";
 import { Skeleton } from "antd";
-import useStore from "@/src/store/useStore";
 import { useSession } from "next-auth/react";
 
 const Home: NextPage = () => {
@@ -42,17 +40,6 @@ const Home: NextPage = () => {
       });
     }, 1000);
   };
-
-  async function GetUserId() {
-    const res = await fetch("/api/userId", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(session?.user?.email as string),
-    });
-    const userId = await res.json();
-    setuserId(userId.userId);
-    return userId.userId;
-  }
 
   const sendAPI = async () => {
     console.log("form ", form.getFieldValue([]).Text.toString());
@@ -90,7 +77,7 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="bg-[#F0F2F5]">
+      <div className="bg-[#F0F2F5] h-screen">
         <Row>
           <Col xs={24} md={{ offset: "2", span: "10" }}>
             <Card

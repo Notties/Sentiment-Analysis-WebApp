@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   DeleteOutlined,
   FileExcelOutlined,
-  QuestionCircleOutlined,
   QuestionCircleTwoTone,
 } from "@ant-design/icons";
 import {
@@ -118,7 +117,7 @@ const ImportCSV: NextPage = () => {
     };
     reader.readAsText(file, "UTF-8");
   };
-
+  
   async function GetUserId() {
     try {
       const res = await fetch("/api/userId", {
@@ -343,8 +342,8 @@ const ImportCSV: NextPage = () => {
   };
 
   const onClick: MenuProps["onClick"] = (e) => {
-    if(!userId){
-      return
+    if (!userId) {
+      return;
     }
     if (e.key === "-1") {
       showDeleteConfirm();
