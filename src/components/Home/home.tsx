@@ -46,7 +46,7 @@ const Home: NextPage = () => {
     try {
       message.loading("Analyzing...");
       setLoading(false);
-      const res = await fetch("http://127.0.0.1:8000/predict", {
+      const res = await fetch("https://f8e0-122-154-3-168.ngrok-free.app/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
