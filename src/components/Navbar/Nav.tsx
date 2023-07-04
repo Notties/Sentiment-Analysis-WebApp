@@ -160,10 +160,10 @@ const Nav = () => {
                 </li>
                 <li>
                   <Link
-                    href="/apidocs"
+                    href="/apipath"
                     className="block py-2 pl-3 pr-4 text-gray-400 rounded hover:bg-gray-100 hover:text-gray-500"
                   >
-                    API Docs
+                    API Path
                   </Link>
                 </li>
               </ul>
@@ -196,13 +196,13 @@ const Nav = () => {
                 </li>
                 <li>
                   <Link
-                    href="/apidocs"
+                    href="/apipath"
                     className="block py-2 pl-3 pr-4 text-gray-500 rounded duration-700
                   md:hover:bg-transparent 
                 md:hover:text-blue-500 
                   md:p-0 "
                   >
-                    API Docs
+                    API Path
                   </Link>
                 </li>
               </ul>

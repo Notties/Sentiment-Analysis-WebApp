@@ -13,6 +13,7 @@ import {
 } from "antd";
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
+import BACKEND_URL from '../../constants/url'
 
 const { Content, Footer } = Layout;
 
@@ -140,7 +141,7 @@ const websites = () => {
     console.log("form ", form.getFieldValue([]).Text.toString());
     try {
       message.loading("Fetching comments...", 90000);
-      const res = await fetch("http://127.0.0.1:8000/scrapeComment", {
+      const res = await fetch(`${BACKEND_URL}/scrapeComment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

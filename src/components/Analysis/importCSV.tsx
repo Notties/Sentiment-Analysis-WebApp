@@ -21,6 +21,7 @@ import type { UploadProps } from "antd";
 import { message, Upload } from "antd";
 import Papa from "papaparse";
 import { useSession } from "next-auth/react";
+import BACKEND_URL from '../../constants/url'
 
 const { Content, Footer, Sider } = Layout;
 
@@ -211,7 +212,7 @@ const ImportCSV: NextPage = () => {
     });
     try {
       message.loading("Analyzing...", 10000);
-      const res = await fetch("http://127.0.0.1:8000/predictObject/", {
+      const res = await fetch(`${BACKEND_URL}/predictObject`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

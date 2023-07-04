@@ -11,17 +11,15 @@ import {
 } from "antd";
 import type { NextPage } from "next";
 import { Input } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Skeleton } from "antd";
-import { useSession } from "next-auth/react";
+import BACKEND_URL from '../../constants/url'
 
 const Home: NextPage = () => {
   const { TextArea } = Input;
   const [loading, setLoading] = useState(true);
-  const [userId, setuserId] = useState("");
   const [dataSentiment, setDataSentiment] = useState<any>({ data: "" });
   const [form] = Form.useForm();
-  const { data: session } = useSession();
 
   const [loadings, setLoadings] = useState<boolean[]>([]);
 
@@ -39,14 +37,14 @@ const Home: NextPage = () => {
         return newLoadings;
       });
     }, 1000);
-  };
+  };  
 
   const sendAPI = async () => {
     console.log("form ", form.getFieldValue([]).Text.toString());
     try {
       message.loading("Analyzing...");
       setLoading(false);
-      const res = await fetch("https://f8e0-122-154-3-168.ngrok-free.app/predict", {
+      const res = await fetch(`${BACKEND_URL}/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
