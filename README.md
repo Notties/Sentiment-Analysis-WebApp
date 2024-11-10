@@ -11,7 +11,3 @@ NEXTAUTH_URL="YOUR_AUTH_URL"
 NEXTAUTH_SECRET="YOUR_SECRET"
 ```
 
-### Change back-end URL in constants folder
-```TypeScript
-const BACKEND_URL: string = "http://127.0.0.1:8000" //Your Backend-URL
-```
